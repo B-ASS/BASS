@@ -32,14 +32,12 @@ docker-compose --version
 - https://nodejs.org/en/ //Install with the version that's right for you
 (We are version is 'macOS 64bit ver.13.0.1 Current')
 
+- Test your installation 
 ```bash
 node -v
 
 npm -v
-```
 
-- Test your installation 
-```bash
 node
 
 console.log('hello');
