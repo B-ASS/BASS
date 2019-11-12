@@ -9,3 +9,4 @@ const config = {
 exports.getConfig = function () {
     return config;
 }
+

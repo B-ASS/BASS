@@ -7,13 +7,14 @@ const config = require('./config/config');
 const tokenAbi = require('./config/erc20ABI')
 const request = require('request');
 
+
 /*
 // init web3
 const Web3 = require('web3');
 const web3 = new Web3(config.getConfig().httpEndpoint);
 */
 
-let app = express();
+var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,6 +24,7 @@ app.use(express.static(path.join(__dirname, '/public')));
 //app.use(express.json());
 //app.use(express.urlencoded({ extended: false }));
 //app.use(cookieParser());
+
 
 let token_list = []
 let address
