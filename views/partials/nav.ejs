@@ -1,0 +1,19 @@
+<!-- views/partials/nav.ejs -->
+
+<nav class="navbar navbar-default">
+ <div class="container">
+  <!-- ... -->
+  <div class="collapse navbar-collapse" id="myNavbar">
+   <!-- ... -->
+   <ul class="nav navbar-nav navbar-right">
+    <% if(isAuthenticated){ %>
+     <li><a href="/users/<%= currentUser.username %>">My Account</a></li>
+     <li><a href="/logout">Logout</a></li>
+    <% } else { %>
+     <li><a href="/users/new">Sign Up</a></li>
+     <li><a href="/login">Login</a></li>
+    <% } %>
+   </ul>
+  </div>
+ </div>
+</nav>

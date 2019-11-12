@@ -12,9 +12,11 @@ var request = require('request');
 const Web3 = require('web3');
 const web3 = new Web3(config.getConfig().httpEndpoint);
 */
-
 var mongoose = require("mongoose");
 var bodyParser = require("body-parser");
+var passport = require('./config/passport');
+var flash = require('connect-flash');
+var session  = require('express-session');
 var app = express();
 
 
@@ -46,13 +48,26 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.use(bodyParser.json()); // 2
 app.use(bodyParser.urlencoded({extended:true})); // 3
 
-// DB schema // 4
-var loginSchema = mongoose.Schema({
-  account:{type:String, required:true, unique:true},
-  password:{type:String, required:true}
-});
+// Passport // 2
+app.use(passport.initialize());
+app.use(passport.session());
 
-var Login = mongoose.model("login", loginSchema);
+// Custom Middlewares // 3
+app.use(function(req,res,next){
+ res.locals.isAuthenticated = req.isAuthenticated();
+ res.locals.currentUser = req.user;
+ next();
+});
+app.use(cookieParser());
+app.use(flash());
+// DB schema // 4
+// var loginSchema = mongoose.Schema({
+//   account:{type:String, required:true, unique:true},
+//   password:{type:String, required:true}
+// });
+
+
+// var Login = mongoose.model("login", loginSchema);
 
 let token_list = []
 let address
@@ -75,44 +90,49 @@ let privateKey
 //   }
 // });
 
-app.get('/login', function(req, res){
-  res.render('login');
-});
-// Contacts - create // 9
-app.post('/login', function(req, res){
-  Login.create(req.body, function(err, signin){
-    if(err) return res.json(err);
-    res.redirect('login');
-  });
-});
+// app.get('/login', function(req, res){
+//   res.render('login');
+// });
+// // Contacts - create // 9
+// app.post('/login', function(req, res){
+//   Login.create(req.body, function(err, signin){
+//     if(err) return res.json(err);
+//     res.redirect('login');
+//   });
+// });
 
-app.get('/', function(req, res) {
-   res.render('index');
- });
+// routes
+app.use('/', require('./routes/home'));
+app.use('/users', require('./routes/users'));
+// app.use('/posts', checkQuery, require('./routes/posts'));
 
- app.get('/about', function(req, res) {
-   res.render('about');
- });
+// app.get('/', function(req, res) {
+//    res.render('index');
+//  });
+//
+//  app.get('/about', function(req, res) {
+//    res.render('about');
+//  });
+//
+//  app.get('/petlist', function (req, res){
+// 	res.render('petlist');
+//   });
+//
+//   app.get('/detail', function (req, res){
+// 	res.render('detail');
+//   });
+//
+//  app.get('/register', function(req, res) {
+//    res.render('register');
+//  });
 
- app.get('/petlist', function (req, res){
-	res.render('petlist');
-  });
 
-  app.get('/detail', function (req, res){
-	res.render('detail');
-  });
-
- app.get('/register', function(req, res) {
-   res.render('register');
- });
-
-
-app.get('/api/get_info', async function(req, res) {
-  let address = config.getConfig().address;
-  let result = await web3.eth.getBalance(address);
-  let ether = web3.utils.fromWei(result, 'ether');
-  res.json( { balance: ether, address: address});
-});
+// app.get('/api/get_info', async function(req, res) {
+//   let address = config.getConfig().address;
+//   let result = await web3.eth.getBalance(address);
+//   let ether = web3.utils.fromWei(result, 'ether');
+//   res.json( { balance: ether, address: address});
+// });
 
 /*
 app.get('/api/get_history', async function(req, res) {

@@ -21,10 +21,16 @@ body {
   margin-bottom: 30px;
 }
 
-.login h2{
+.contact h2{
   color: tomato;
 }
-.login .login-form label{
+.contact .contact-form label{
   display: inline-block;
   width: 50px;
+}
+
+.home-login{ /* 1 */
+ max-width: 330px;
+ font-family: 'Open Sans', sans-serif;
+ font-size: 12px;
 }
