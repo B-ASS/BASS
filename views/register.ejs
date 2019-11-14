@@ -39,13 +39,13 @@
             <a class="nav-link" href="register">Register</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="services">Complete</a>
+            <a class="nav-link" href="complete">Complete</a>
           </li>
           <li>
             <a class="nav-link" href="login">Login</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="blog-post">Blog Post</a>
+            <a class="nav-link" href="complete">Blog Post</a>
           </li>
         </ul>
       </div>
@@ -108,10 +108,18 @@
       </div>
       <br>
       <div class="col-lg-6 mb-4">
-        <form action="localhost/upload_image" method="post" enctype="multipart/form-data">
+
+        <!--<form action="localhost/upload_image" method="post" enctype="multipart/form-data">
           <input type="file" name="test_file">
           <button type="submit">전송</button>
+      </form>-->
+
+      <form action="/upload" method="post" enctype="multipart/form-data" id="fileForm">
+        <input type="file" id="fileInput" name="fileInput">
+        <!--<button type="submit">전송</button>-->
       </form>
+      <input type="text" id="filePath">
+
       </div>
 
     </div>
@@ -136,6 +144,30 @@
   <!-- Do not edit these files! In order to set the email address and subject line for the register form go to the bin/register_me.php file. -->
   <script src="js/jqBootstrapValidation.js"></script>
   <script src="js/register_me.js"></script>
+
+
+  <script src="http://code.jquery.com/jquery-1.7.1.js"></script>
+<script>
+    $('#fileInput').on('change', function () {
+        var form = $('#fileForm')[0];
+        var formData = new FormData(form);
+ 
+        $.ajax({
+            type: 'post',
+            url: '/upload',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                $('#filePath').val(data);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });
+</script>
+
 
 </body>
 

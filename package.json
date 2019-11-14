@@ -4,11 +4,17 @@
   "description": "[Modern Business](http://startbootstrap.com/template-overviews/modern-business/) is a multipurpose, full website template for [Bootstrap](http://getbootstrap.com/) created by [BASS Project](http://startbootstrap.com/). This template includes 17 unique ejs pages and a working PHP register form.",
   "main": "app.js",
   "dependencies": {
+    "alert-node": "^2.0.3",
+    "bcrypt": "^3.0.6",
     "cookie-parser": "^1.4.4",
     "ejs": "^2.7.1",
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "js-alert": "^1.0.4",
     "morgan": "^1.9.1",
+    "multer": "^1.4.2",
     "multiparty": "^4.2.1",
+    "mysql": "^2.17.1",
     "node-mysql": "^0.4.2",
     "request": "^2.88.0"
   },
