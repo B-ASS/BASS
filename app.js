@@ -5,18 +5,18 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const config = require('./config/config');
-const tokenAbi = require('./config/erc20ABI')
+const tokenAbi = require('./config/erc20ABI');
 const request = require('request');
 
 
-
+var app = express();
 var url = require('url');
 var qs = require('querystring');
 var mysql = require('mysql');
-var app = express();
 var bcrypt = require('bcrypt');
 
-var session = require('express-session');
+var bodyParser = require('body-parser');
+var session = require('express-session');     //로그인 된 범위를 나누기위해
 var jalert = require('js-alert');   // 로컬에 팝업창 띄워주는 모듈
 var alert = require('alert-node');   //콘솔에 팝업창 띄워주는 모듈
 
@@ -37,11 +37,37 @@ db.connect();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, '/public')));
+//app.use(bodyParser.urlencoded({extended : true}));
+//app.use(bodyParser());
 //app.use(logger('dev'));
 //app.use(express.json());
-//app.use(express.urlencoded({ extended: false }));
-//app.use(cookieParser());
+//app.use(express.cookieParser());
 
+/*
+app.use(cookieParser());
+app.use(session({
+  secret: 'secret key',
+  key: 'lee',
+  resave : true,  // 저장유무
+  saveUninitialized : true,  // 속성을 초기화 하지 않고 저장
+  cookie: {maxAge:60*1000}
+}));
+*/
+/*
+app.use(function(request, response){
+  //변수선언
+  var output = {};
+  output.cookies = request.cookies;
+  output.session = request.session;
+
+  //세션 저장
+  request.session.now = (new Date()).toUTCString();
+  
+  //응답합니다.
+  response.send(output);
+
+});
+*/
 let token_list = []
 let address
 let privateKey
@@ -70,7 +96,8 @@ app.use('/login', function(req, res) {
           var account = post.account;
           var password = post.password;
           console.log(account, password);
-               db.query('select * from members where account=?', account, function(err, result){
+
+          db.query('select * from members where account=?', account, function(err, result){
           if(err){ 
             console.log('err: ' +err);
           }
@@ -79,18 +106,17 @@ app.use('/login', function(req, res) {
               jalert.alert('회원정보 오류');
               alert('회원정보가 없습니다. 다시 로그인 해주세요. 회원가입을 원하시면 Join을 눌러주세요');
               res.render('login')
-              //res.json({sucess: false, msg : 'no user'})
             }
             else {
               //console.log(result[0].password);
               if(password===result[0].password){
                 jalert.alert('회원 입장');
-              alert('회원님 환영합니다 :)');
+                alert('?님 환영합니다 :)');
                 //res.json({success : true})
                 res.render('index')
               }else{
                 jalert.alert('비밀번호 오류');
-                alert('비밀번호가 다릅니다');
+                alert('아이디 및 비밀번호가 다릅니다');
                 res.render('login')
                 //res.json({sucess: false, msg : '비밀번호가 다릅니다'})
             }
@@ -109,113 +135,116 @@ app.use('/join', function(req, res) {
     var _url = req.url;
     var pathname = url.parse(_url, true).pathname;
     var queryData = url.parse(_url, true).query;
+/*
+    console.log('GET : /memberJoin 회원가입폼 요청');
+    if(req.session.login_member){
+        console.log('현재 로그인 상태입니다.');
+        res.redirect('index');
+    }else {
+        res.render('join');
+    }
+*/
 
     db.query('select * from members', function(error, members){
       if(error){
-      throw error;
+        console.log('err: ' +err);
       }
       console.log(members);   //console.log(members[0].account);
       res.render('join', {result: members});  
     })
+
   } else if (method == 'POST'){
+    var body = '';
+    req.on('data', function(data){
+        body = body + data;
+    });                         // 매우 중요한! 데이터를 추가하는 기능
+    req.on('end', function(){
+        var post = qs.parse(body);
+
+        db.query('select * from members', function(error, members){
+          if(error){
+            console.log('err: ' +err);
+          }
+          
+          db.query('insert into members (account, password) values(?, ?)',
+            [post.account, post.password],
+            function(error, result){
+              if(error){
+                throw error;
+              }
+              else if(result.account===members.account){
+                jalert.alert('이미 회원정보가 존재합니다');
+                alert('이미 회원정보가 존재합니다');
+                res.render('join');
+              }
+              else{
+                res.writeHead(302, {Location: `/login`});
+                res.end();
+                //res.render('login');
+              }
+            
+            })
+          
+            console.log(members); 
+          })
+          
+        })
+    }
+  });
+
+
+app.use('/register', function(req, res) {
+  //res.render('register');
+  const method = req.method;
+  
+  if(method=='GET'){
+    var _url = req.url;
+    var pathname = url.parse(_url, true).pathname;
+    var queryData = url.parse(_url, true).query;
+    //var _url = req.url;
+    //var pathname = url.parse(_url, true).pathname;
+    //var queryData = url.parse(_url, true).query;
+    db.query('select * from pets', function(error, pets){
+      if(error){
+      throw error;
+      }
+    console.log(pets);
+    res.render('register', {result: pets});  
+    })
+
+  }
+  else if(method == 'POST'){
     var body = '';
     req.on('data', function(data){
         body = body + data;
     });     // 매우 중요한! 데이터를 추가하는 기능
     req.on('end', function(){
-        var post = qs.parse(body);
+        var regi = qs.parse(body);
         
-        db.query('insert into members (account, password) values(?, ?)',
-          [post.account, post.password],
+        db.query('insert into pets (breeds, sex, age, area, price, img, owner_id) values(?, ?, ?, ?, ?, NULL, NULL)',
+          [regi.breeds, regi.sex, regi.age, regi.area, regi.price],
           function(error, result){
             if(error){
               throw error;
             }
-            res.writeHead(302, {Location: `/login`});
+            res.writeHead(302, {Location: `/petlist`});
             res.end();
             //console.log(member);
           }
         )
 
-        db.query('select * from members', function(error, members){
+        db.query('select * from pets', function(error, pets){
           if(error){
           throw error;
           }
-        console.log(members); 
+        console.log(pets); 
         })
 
     });
-  }
-});
 
-
-/*
-app.get('/login', function(req, res) {
-  var _url = req.url;
-  var pathname = url.parse(_url, true).pathname;
-  var queryData = url.parse(_url, true).query;
-
-  if(pathname === '/'){
-  db.query('select * from members', function(error, members){
-    if(error){
-      throw error;
-    }
-    console.log(members);
-    console.log(members[0].account);
-    var id = members[0].id;     //제목 
-    var account = members[0].account;
-    var password = members[0].pw;     //본문
-    
-    //res.writeHead(200);
-    res.render('login', {result: members});  
-  })
-  }
-  /*else if(pathname === '/create_process'){
-    req.on('end', function(){
-        var post = qs.parse(body);
-
-        db.query('insert into members (account, password) values(?, ?)',
-            [post.id, post.pw],
-            function(error, result){
-              if(error){
-                throw error;
-              }
-              res.writeHead(302, {Location: `/?id=${result.insertId}`});
-          res.end();
-          console.log(result);
-            }
-            )
-    });
   }
 
 });
-*/
-
-/*
-app.post('/create_process', function(res, req){
-  req.on('end', function(){
-    //var post = qs.parse(body);
-    var post = req.body;
-    //var id = post[0].id;     //제목 
-    //var account = post[0].account;
-    //var password = post[0].password;     //본문
-
-    db.query('insert into members (account, password) values(?, ?)',
-        [post.account, post.password],
-        function(error, result){
-          if(error){
-            throw error;
-          }
-          //res.writeHead(302, {Location: `/?id=${result.insertId}`});
-      res.end();
-      res.redirect("/create_process")
-      //res.render('index');
-      //console.log(result);
-        }
-        )
-});
-})
-*/
 
 app.get('/', function(req, res) {
   res.render('index');
@@ -233,11 +262,6 @@ app.get('/detail', function (req, res){
 res.render('detail');
 });
 
-app.get('/register', function(req, res) {
-  res.render('register');
-
-});
-
 app.get('/complete', function(req, res) {
 res.render('complete');
 });
@@ -247,12 +271,6 @@ app.get('/upload', function(req, res){
   res.render('upload');
 });
 
-/*
-app.post("/upload", upload.array(), (req, res, next) => {
-  res.send("uploaded");
-});
-*/
-
 
 app.get('/api/get_info', async function(req, res) {
   let address = config.getConfig().address;
@@ -260,6 +278,14 @@ app.get('/api/get_info', async function(req, res) {
   let ether = web3.utils.fromWei(result, 'ether');
   res.json( { balance: ether, address: address});
 });
+
+app.listen(5005, function(){
+  console.log("Connected 5005 port!");
+});
+
+
+module.exports = app;
+
 
 /*
 app.get('/api/get_history', async function(req, res) {
@@ -288,5 +314,3 @@ app.get('/api/get_history', async function(req, res) {
   })
 })
 */
-
-module.exports = app;

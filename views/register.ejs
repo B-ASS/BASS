@@ -70,63 +70,67 @@
     <!-- Content Row -->
 
     <!-- register Form -->
-    <!-- In order to set the email address and subject line for the register form go to the bin/register_me.php file. -->
     <div class="row">
       <div class="col-lg-6 mb-4">
         <h3>Register your animal</h3>
-        <form name="sentMessage" id="registerForm" novalidate>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <form action="/register" name="registerAnimal" method="POST" id="registerForm" novalidate>
           <div class="control-group form-group">
             <div class="controls">
               <label>품종:</label>
-              <input type="text" class="form-control" id="kind" required data-validation-required-message="Please enter breeds of animals.">
+              <input type="text" class="form-control" id="breeds" name="breeds" required data-validation-required-message="Please enter breeds of animals.">
               <p class="help-block"></p>
             </div>
           </div>
           <div class="control-group form-group">
             <div class="controls">
               <label>성별:</label>
-              <input type="text" class="form-control" id="sex" required data-validation-required-message="Please enter sex of animals.">
+              <input type="text" class="form-control" name="sex" required data-validation-required-message="Please enter sex of animals.">
             </div>
           </div>
           <div class="control-group form-group">
             <div class="controls">
               <label>나이:</label>
-              <input type="number" class="form-control" id="age" required data-validation-required-message="Please enter age of animals.">
+              <input type="number" class="form-control" name="age" required data-validation-required-message="Please enter age of animals.">
             </div>
           </div>
           <div class="control-group form-group">
             <div class="controls">
-              <label>상세정보:</label>
-              <textarea rows="10" cols="100" class="form-control" id="message" required data-validation-required-message="Please enter your message" maxlength="999" style="resize:none"></textarea>
+              <label>지역:</label>
+              <input type="text" class="form-control" name="area" required data-validation-required-message="Please enter your area">
             </div>
           </div>
-          <div id="success"></div>
-          <!-- For success/fail messages -->
-          <button href="petlist" type="submit" class="btn btn-primary" id="registerButton">Go to Register</button>
+          <div class="control-group form-group">
+            <div class="controls">
+              <label>가격:</label>
+              <input type="number" class="form-control" name="price" required data-validation-required-message="Please enter price">
+            </div>
+          </div>
         </form>
-        
       </div>
-      <br>
       <div class="col-lg-6 mb-4">
-
-        <!--<form action="localhost/upload_image" method="post" enctype="multipart/form-data">
-          <input type="file" name="test_file">
-          <button type="submit">전송</button>
-      </form>-->
-
-      <form action="/upload" method="post" enctype="multipart/form-data" id="fileForm">
-        <input type="file" id="fileInput" name="fileInput">
-        <!--<button type="submit">전송</button>-->
-      </form>
-      <input type="text" id="filePath">
-
+        <form action="/register" method="post" enctype="multipart/form-data" id="fileForm">
+          <input type="file" class="form-control-file" id="fileInput" name="fileInput">
+          <!--<button type="submit">전송</button>-->
+          <input type="image" id="filePath">
+        </form>
       </div>
-
     </div>
-    <!-- /.row -->
 
-  </div>
-  <!-- /.container -->
+    <div class="row">
+      <form action="/register" name = "register" method="post" style="font-family: Verdana;">
+        <div id="success">
+          <button type="submit" class="btn btn-primary btn-lg btn-block" id="registerButton">Go to Register</button>
+        </div> 
+      </form>
+    </div><!-- /.row -->
+
+    <br><br>
+  </div><!-- /.container -->
 
   <!-- Footer -->
   <footer class="py-5 bg-dark">
@@ -148,6 +152,8 @@
 
   <script src="http://code.jquery.com/jquery-1.7.1.js"></script>
 <script>
+  
+
     $('#fileInput').on('change', function () {
         var form = $('#fileForm')[0];
         var formData = new FormData(form);
