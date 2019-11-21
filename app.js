@@ -8,7 +8,6 @@ const config = require('./config/config');
 const tokenAbi = require('./config/erc20ABI');
 const request = require('request');
 
-
 var app = express();
 var url = require('url');
 var qs = require('querystring');
@@ -62,7 +61,7 @@ app.use(function(request, response){
 
   //세션 저장
   request.session.now = (new Date()).toUTCString();
-  
+
   //응답합니다.
   response.send(output);
 
@@ -86,9 +85,9 @@ app.use('/login', function(req, res) {
       throw error;
       }
     console.log(members);
-    res.render('login', {result: members});  
+    res.render('login', {result: members});
     })
-  } 
+  }
   else if (method == 'POST'){
         req.on('data', function(data){
           console.log(data.toString());
@@ -98,7 +97,7 @@ app.use('/login', function(req, res) {
           console.log(account, password);
 
           db.query('select * from members where account=?', account, function(err, result){
-          if(err){ 
+          if(err){
             console.log('err: ' +err);
           }
           else {
@@ -150,7 +149,7 @@ app.use('/join', function(req, res) {
         console.log('err: ' +err);
       }
       console.log(members);   //console.log(members[0].account);
-      res.render('join', {result: members});  
+      res.render('join', {result: members});
     })
 
   } else if (method == 'POST'){
@@ -165,7 +164,7 @@ app.use('/join', function(req, res) {
           if(error){
             console.log('err: ' +err);
           }
-          
+
           db.query('insert into members (account, password) values(?, ?)',
             [post.account, post.password],
             function(error, result){
@@ -182,12 +181,12 @@ app.use('/join', function(req, res) {
                 res.end();
                 //res.render('login');
               }
-            
+
             })
-          
-            console.log(members); 
+
+            console.log(members);
           })
-          
+
         })
     }
   });
@@ -196,7 +195,7 @@ app.use('/join', function(req, res) {
 app.use('/register', function(req, res) {
   //res.render('register');
   const method = req.method;
-  
+
   if(method=='GET'){
     var _url = req.url;
     var pathname = url.parse(_url, true).pathname;
@@ -209,7 +208,7 @@ app.use('/register', function(req, res) {
       throw error;
       }
     console.log(pets);
-    res.render('register', {result: pets});  
+    res.render('register', {result: pets});
     })
 
   }
@@ -220,7 +219,7 @@ app.use('/register', function(req, res) {
     });     // 매우 중요한! 데이터를 추가하는 기능
     req.on('end', function(){
         var regi = qs.parse(body);
-        
+
         db.query('insert into pets (breeds, sex, age, area, price, img, owner_id) values(?, ?, ?, ?, ?, NULL, NULL)',
           [regi.breeds, regi.sex, regi.age, regi.area, regi.price],
           function(error, result){
@@ -237,7 +236,7 @@ app.use('/register', function(req, res) {
           if(error){
           throw error;
           }
-        console.log(pets); 
+        console.log(pets);
         })
 
     });
