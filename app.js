@@ -19,6 +19,7 @@ var bodyParser = require('body-parser');
 var session = require('express-session');     //로그인 된 범위를 나누기위해
 var jalert = require('js-alert');   // 로컬에 팝업창 띄워주는 모듈
 var alert = require('alert-node');   //콘솔에 팝업창 띄워주는 모듈
+var fs = require('fs');
 
 var db = mysql.createConnection({
     host:'localhost', //접속할 데이터베이스 시스템 링크
@@ -111,7 +112,7 @@ app.use('/login', function(req, res) {
               //console.log(result[0].password);
               if(password===result[0].password){
                 jalert.alert('회원 입장');
-                alert('?님 환영합니다 :)');
+                alert('?님 환영합니다 :)', account);
                 //res.json({success : true})
                 res.render('index')
               }else{
@@ -144,7 +145,6 @@ app.use('/join', function(req, res) {
         res.render('join');
     }
 */
-
     db.query('select * from members', function(error, members){
       if(error){
         console.log('err: ' +err);
@@ -160,37 +160,46 @@ app.use('/join', function(req, res) {
     });                         // 매우 중요한! 데이터를 추가하는 기능
     req.on('end', function(){
         var post = qs.parse(body);
-
-        db.query('select * from members', function(error, members){
-          if(error){
+        var account = post.account;
+          var password = post.password;
+        //db.query('select * from members', function(error, members){
+          //if(error){
+            //console.log('err: ' +err);
+          //
+        db.query('select * from members where account=?', account, function(err, members){
+          if(err){ 
             console.log('err: ' +err);
           }
-          
-          db.query('insert into members (account, password) values(?, ?)',
+          console.log(members);
+          if(members.length === 0){
+            db.query('insert into members (account, password) values(?, ?)',
             [post.account, post.password],
-            function(error, result){
-              if(error){
-                throw error;
+            function(error2, member){
+              if(error2){
+                throw error2;
               }
-              else if(result.account===members.account){
-                jalert.alert('이미 회원정보가 존재합니다');
-                alert('이미 회원정보가 존재합니다');
-                res.render('join');
-              }
-              else{
-                res.writeHead(302, {Location: `/login`});
+              res.writeHead(302, {Location: `/login`});
                 res.end();
-                //res.render('login');
-              }
+          })
+        }else{
+          db.query('DELETE from members WHERE account=? and password=?', [account, password], function(error2, mem){
+            if(error2){
+              throw error2;
+            }
+            jalert.alert('이미 회원정보가 존재합니다');
+            alert('이미 회원정보가 존재합니다');
+            res.render('join');
+          })
+          console.log(members);
+        }
             
-            })
-          
-            console.log(members); 
           })
           
-        })
-    }
-  });
+          })
+          
+        }
+        console.log(members); 
+    });
 
 
 app.use('/register', function(req, res) {
@@ -221,11 +230,11 @@ app.use('/register', function(req, res) {
     req.on('end', function(){
         var regi = qs.parse(body);
         
-        db.query('insert into pets (breeds, sex, age, area, price, img, owner_id) values(?, ?, ?, ?, ?, NULL, NULL)',
+        db.query('insert into pets(breeds, sex, age, area, price, img, owner_id) values(?, ?, ?, ?, ?, NULL, NULL)',
           [regi.breeds, regi.sex, regi.age, regi.area, regi.price],
           function(error, result){
             if(error){
-              throw error;
+              console.log('register error:', error.message);
             }
             res.writeHead(302, {Location: `/petlist`});
             res.end();
@@ -255,7 +264,22 @@ app.get('/about', function(req, res) {
 });
 
 app.get('/petlist', function (req, res){
-res.render('petlist');
+  //새로작성한 부분
+  fs.readFile('petlsit', 'utf8', function(error, data){
+    if (error){
+      console.log('readFile Error');
+    }else{
+      db.query('select * from pets', function(error, results){
+        if(error){
+          console.log('error:', error.message);
+        }else{
+      res.send(ejs.render(data, {prodList : results}));  
+        }
+      });
+    }
+  })
+  //여기까지
+//res.render('petlist');
 });
 
 app.get('/detail', function (req, res){
