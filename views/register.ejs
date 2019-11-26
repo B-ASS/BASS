@@ -1,29 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-
   <title>BASS - BASS Project Template</title>
-
   <!-- Bootstrap core CSS -->
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
   <!-- Custom styles for this template -->
   <link href="css/modern-business.css" rel="stylesheet">
-
 </head>
-
 <body>
-
+  
   <!-- Navigation -->
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="http://127.0.0.1:5000/">BASS Project</a>
+      <a class="navbar-brand" href="http://127.0.0.1:5005/">BASS Project</a>
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -54,28 +47,23 @@
 
   <!-- Page Content -->
   <div class="container">
-
     <!-- Page Heading/Breadcrumbs -->
     <h1 class="mt-4 mb-3">Register
       <small>Subheading</small>
     </h1>
-
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
         <a href="index.ejs">Home</a>
       </li>
       <li class="breadcrumb-item active">Register</li>
     </ol>
-
-    <!-- Content Row -->
-
+    
     <!-- register Form -->
     <div class="row">
       <div class="col-lg-6 mb-4">
         <h3>Register your animal</h3>
       </div>
     </div>
-
     <div class="row">
       <div class="col-lg-6 mb-4">
         <form action="/register" name="registerAnimal" method="POST" id="registerForm" novalidate>
@@ -89,92 +77,68 @@
           <div class="control-group form-group">
             <div class="controls">
               <label>성별:</label>
-              <input type="text" class="form-control" name="sex" required data-validation-required-message="Please enter sex of animals.">
+              <input type="text" class="form-control" id="sex" name="sex" required data-validation-required-message="Please enter sex of animals.">
             </div>
           </div>
           <div class="control-group form-group">
             <div class="controls">
               <label>나이:</label>
-              <input type="number" class="form-control" name="age" required data-validation-required-message="Please enter age of animals.">
+              <input type="number" class="form-control" id="age" name="age" required data-validation-required-message="Please enter age of animals.">
             </div>
           </div>
           <div class="control-group form-group">
             <div class="controls">
               <label>지역:</label>
-              <input type="text" class="form-control" name="area" required data-validation-required-message="Please enter your area">
+              <input type="text" class="form-control" id="area" name="area" required data-validation-required-message="Please enter your area">
             </div>
           </div>
           <div class="control-group form-group">
             <div class="controls">
               <label>가격:</label>
-              <input type="number" class="form-control" name="price" required data-validation-required-message="Please enter price">
+              <input type="number" class="form-control" id="price" name="price" required data-validation-required-message="Please enter price">
             </div>
           </div>
         </form>
       </div>
-      <div class="col-lg-6 mb-4">
-        <form action="/register" method="post" enctype="multipart/form-data" id="fileForm">
-          <input type="file" class="form-control-file" id="fileInput" name="fileInput">
-          <!--<button type="submit">전송</button>-->
-          <input type="image" id="filePath">
-        </form>
-      </div>
-    </div>
-
     <div class="row">
-      <form action="/register" name = "register" method="post" style="font-family: Verdana;">
+      <form action="/register" method="POST">
         <div id="success">
           <button type="submit" class="btn btn-primary btn-lg btn-block" id="registerButton">Go to Register</button>
-        </div> 
+        </div>
       </form>
-    </div><!-- /.row -->
-
+    </div>
     <br><br>
-  </div><!-- /.container -->
+  </div>
 
   <!-- Footer -->
   <footer class="py-5 bg-dark">
     <div class="container">
       <p class="m-0 text-center text-white">Copyright &copy; Your Website 2019</p>
     </div>
-    <!-- /.container -->
   </footer>
-
-  <!-- Bootstrap core JavaScript -->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-  <!-- register form JavaScript -->
-  <!-- Do not edit these files! In order to set the email address and subject line for the register form go to the bin/register_me.php file. -->
-  <script src="js/jqBootstrapValidation.js"></script>
-  <script src="js/register_me.js"></script>
-
-
-  <script src="http://code.jquery.com/jquery-1.7.1.js"></script>
-<script>
   
-
-    $('#fileInput').on('change', function () {
-        var form = $('#fileForm')[0];
-        var formData = new FormData(form);
- 
-        $.ajax({
-            type: 'post',
-            url: '/upload',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (data) {
-                $('#filePath').val(data);
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
+  <!--script-->
+  <script src="http://code.jquery.com/jquery-1.7.1.js"></script>
+  <script>
+    $("#registerButton").click(function(){
+      $.ajax({
+        url: 'http://localhost:5005/register',
+        async: true,
+        type: 'POST',
+        data: {
+          "breed" : $("#breeds").val(),
+          "sex": $("#sex").val(),
+          "age": $("#age").val(),
+          "area": $("#area").val(),
+          "price": $("#price").val()
+        },
+        dataType: 'json',
+        success: function(data){
+        },
+        error: function(err){
+        }
+      });
     });
-</script>
-
-
+  </script>
 </body>
-
 </html>
