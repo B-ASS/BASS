@@ -12,7 +12,7 @@
   <link href="css/modern-business.css" rel="stylesheet">
 </head>
 <body>
-  
+
   <!-- Navigation -->
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
@@ -98,9 +98,16 @@
               <input type="number" class="form-control" id="price" name="price" required data-validation-required-message="Please enter price">
             </div>
           </div>
+          <div class="control-group form-group">
+              <div class="controls">
+                <label>주인의 계정:</label>
+                <input type="text" class="form-control" id="owner_acc" name="owner_acc" required data-validation-required-message="Please enter your account">
+              </div>
+            </div>
         </form>
       </div>
-    <div class="row">
+      <br>
+    <div class="col-lg-6 mb-4">
       <form action="/register" method="POST">
         <div id="success">
           <button type="submit" class="btn btn-primary btn-lg btn-block" id="registerButton">Go to Register</button>
@@ -130,7 +137,8 @@
           "sex": $("#sex").val(),
           "age": $("#age").val(),
           "area": $("#area").val(),
-          "price": $("#price").val()
+          "price": $("#price").val(),
+          "owner_acc": $("#owner_acc").val()
         },
         dataType: 'json',
         success: function(data){
