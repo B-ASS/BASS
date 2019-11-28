@@ -1,5 +1,5 @@
 {
-  "name": "baas_project",
+  "name": "BASS_project",
   "version": "1.0.0",
   "description": "[Modern Business](http://startbootstrap.com/template-overviews/modern-business/) is a multipurpose, full website template for [Bootstrap](http://getbootstrap.com/) created by [BASS Project](http://startbootstrap.com/). This template includes 17 unique ejs pages and a working PHP register form.",
   "main": "app.js",
@@ -19,7 +19,9 @@
     "node-mysql": "^0.4.2",
     "request": "^2.88.0",
     "ts-node": "^8.5.2",
-    "typescript": "^3.7.2"
+    "typescript": "^3.7.2",
+    "@herajs/crypto": "^0.16.1",
+    "yarn": "^1.19.2"
   },
   "devDependencies": {},
   "scripts": {

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>BASS - BASS Project Template</title>
+  <title>BASS</title>
   <!-- Bootstrap core CSS -->
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <!-- Custom styles for this template -->
@@ -49,7 +49,7 @@
   <div class="container">
     <!-- Page Heading/Breadcrumbs -->
     <h1 class="mt-4 mb-3">Register
-      <small>Subheading</small>
+      <small>You can register the animals you want to sell</small>
     </h1>
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
@@ -107,15 +107,25 @@
         </form>
       </div>
       <br>
-    <div class="col-lg-6 mb-4">
+      <div class="col-lg-6 mb-4">
+        <label>혈통서 업로드:</label>
+        <form action="/upload" method="post" enctype="multipart/form-data" id="fileForm">
+          <input type="file" id="fileInput" name="fileInput">
+          <input type="text" id="filePath">
+        </form>
+      </div>
+    </div>
+    <div class="row">
+    <div class="col-lg-12 mb-4">
       <form action="/register" method="POST">
         <div id="success">
           <button type="submit" class="btn btn-primary btn-lg btn-block" id="registerButton">Go to Register</button>
         </div>
       </form>
     </div>
-    <br><br>
   </div>
+    <br><br>
+</div>
 
   <!-- Footer -->
   <footer class="py-5 bg-dark">

@@ -6,6 +6,21 @@ const config = require('./config/config');
 const tokenAbi = require('./config/erc20ABI');
 const request = require('request');
 
+const herajs = require('@herajs/client');
+const crypto = require('@herajs/crypto');
+
+// Given 
+const aergoClient = new herajs.AergoClient();
+const aergoContract = herajs.Contract;
+const contractAddress = 'Amhj1qb9i9gvYPyhWPiuVp7h8BowSmux5oxmWv9AHzGxAqDJoyw1';
+const encodeType = 'base58';
+
+// pki
+const fromAddress = 'AmPLesjq2matNck5Y1xadYK74BigLCAALW3j25HR2Wddo48HoGUY';
+const fromPrivateKey = '6hxNXYjopdRoSmbUsRPiv58dsqyHrYJie4HUKsPL3eB4kFcFVx6';
+const identity = crypto.identifyFromPrivateKey(fromPrivateKey);
+
+
 var url = require('url');
 var qs = require('querystring');
 var mysql = require('mysql');
@@ -196,7 +211,47 @@ app.use('/register', function(req, res) {
         var regi = qs.parse(body);
         console.log(regi);
         res.render('index');
+        const main = async () => {
+          // smart contract 구조 불러오기
+          const abi  = await aergoClient.getABI(contractAddress);
+          const contract = aergoContract.fromAbi(abi);
+          contract.setAddress(contractAddress);
+          contract.loadAbi(abi);
+          // 스마트 컨트랙트 실행
+          const callTx = contract.set('54', regi.breed, regi.sex, regi.age, regi.area, regi.price, regi.owner_acc).asTransaction({
+            //id,
+            //breed:breed, sex:sex, age:age, area:area, price:price, owner_id:owner_id,
+            from: fromAddress
+          });
+          const transactionId = await executeContract(callTx);
+          console.log(transactionId);
+          // 스마트컨트랙트 조회
+          // findAll은 smartcontract에 예시로 작성함 함수 -> 조회하려는 형태로 변환해서 사용할 것
+          //const queryResult = await aergoClient.queryContract(contract.get(id='3'));
+          //console.log(queryResult);
+        };
+        const executeContract = async (callTx) => {
+          // 트랜잭션 생성 로직
+          const transaction = {
+            nonce: await aergoClient.getNonce(fromAddress) + 1,
+            chainIdHash: await aergoClient.getChainIdHash(encodeType),
+            from: callTx.from,
+            to: callTx.to.encoded,
+            payload: callTx.payload,
+            amount: '0',
+            sign: '',
+            hash:''
+          };
+          transaction.sign = await crypto.signTransaction(transaction, identity.keyPair);
+          transaction.hash = await crypto.hashTransaction(transaction, encodeType);
+          // 생성된 트랜잭션 전송
+          const transactionId = await aergoClient.sendSignedTransaction(transaction);
+          return transactionId;
+        }
+        main();
         //res.end(JSON.stringify(regi));
+
+        
     });
   }
 });
@@ -227,13 +282,62 @@ app.get('/upload', function(req, res){
   res.render('upload');
 });
 
+/*
+const main = async () => {
+  // smart contract 구조 불러오기
+  const abi  = await aergoClient.getABI(contractAddress);
+  const contract = aergoContract.fromAbi(abi);
+  contract.setAddress(contractAddress);
+  contract.loadAbi(abi);
 
+  // 스마트 컨트랙트 실행
+  //const callTx = contract.set (regi.breed,regi.sex, regi.age, regi.area, regi.price, regi.owner_acc).asTransaction({
+  const callTx = contract.set ('13', '호호', '여', '45', '천안', '50000', '12').asTransaction({
+    from: fromAddress
+  });
+  const transactionId = await executeContract(callTx);
+  console.log(transactionId);
+
+  // 스마트컨트랙트 조회
+  const queryResult = await aergoClient.queryContract(contract.get(id='13')); 
+  console.log(queryResult)
+}
+
+// async function executeContract() { ... } 와 동일
+const executeContract = async (callTx) => {
+  // 트랜잭션 생성 로직
+  const transaction = {
+    nonce: await aergoClient.getNonce(fromAddress) + 1,
+    chainIdHash: await aergoClient.getChainIdHash(encodeType),
+    from: callTx.from,
+    to: callTx.to.encoded,
+    payload: callTx.payload,
+    amount: '0',
+    sign: '',
+    hash: ''
+  };
+
+  transaction.sign = await crypto.signTransaction(transaction, identity.keyPair);
+  transaction.hash = await crypto.hashTransaction(transaction, encodeType);
+  
+  // 생성된 트랜잭션 전송
+  const transactionId = await aergoClient.sendSignedTransaction(transaction);
+  return transactionId;
+}
+
+// main 함수 실행
+main();
+*/
+
+/*  
 app.get('/api/get_info', async function(req, res) {
   let address = config.getConfig().address;
   let result = await web3.eth.getBalance(address);
   let ether = web3.utils.fromWei(result, 'ether');
   res.json( { balance: ether, address: address});
 });
+*/
+
 
 app.listen(5005, function(){
   console.log("Connected 5005 port!");
